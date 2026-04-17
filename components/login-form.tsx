@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -13,39 +14,12 @@ interface LoginFormProps {
   visitorInfo?: any
 }
 
-// ✅ Updated validation logic (strict)
-export function validateUserId(input: string): string | null {
-  const trimmed = input.trim();
-
-  // Check if the input is empty
-  if (!trimmed) {
-    return "User ID is required.";
-  }
-
-  // Block any input containing "@", as it's considered email-like
-  if (trimmed.includes("@")) {
-    return "Invalid input: please enter your User ID, not an email.";
-  }
-
-  // Block inputs starting with "u" or "U"
-  if (trimmed.toLowerCase().startsWith("u")) {
-    return "User ID cannot start with the letter 'U'.";
-  }
-
-  // If no issues, return null (valid)
-  return null;
-}
-
 export function LoginForm({ visitorInfo }: LoginFormProps) {
   const [userId, setUserId] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [newUserLoading, setNewUserLoading] = useState(false)
-
-  const [userIdError, setUserIdError] = useState<string | null>(null)
-  const [passwordError, setPasswordError] = useState<string | null>(null)
-
   const router = useRouter()
 
   const handleNewUserClick = (e: React.MouseEvent) => {
@@ -60,27 +34,6 @@ export function LoginForm({ visitorInfo }: LoginFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (isLoading) return
-
-    // ✅ Validate User ID
-    const userError = validateUserId(userId)
-    if (userError) {
-      setUserIdError(userError)
-    } else {
-      setUserIdError(null)
-    }
-
-    // ✅ Validate Password
-    if (!password.trim()) {
-      setPasswordError("Password is required.")
-    } else {
-      setPasswordError(null)
-    }
-
-    // 🚫 Stop submission if any errors
-    if (userError || !password.trim()) {
-      return
-    }
-
     setIsLoading(true)
 
     try {
@@ -124,7 +77,6 @@ export function LoginForm({ visitorInfo }: LoginFormProps) {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         
-        {/* User ID */}
         <div className="relative">
           <div className="absolute left-0 top-0 bottom-0 w-11 bg-[#5a5a5a] flex items-center justify-center">
             <img src="/placeholder-user.png" alt="User" className="w-4 h-4" />
@@ -133,19 +85,12 @@ export function LoginForm({ visitorInfo }: LoginFormProps) {
             type="text"
             placeholder="User ID"
             value={userId}
-            onChange={(e) => {
-              setUserId(e.target.value)
-              if (userIdError) setUserIdError(null)
-            }}
+            onChange={(e) => setUserId(e.target.value)}
             className="pl-12 bg-white border-gray-300 h-10 placeholder:text-gray-500 text-sm rounded-md"
           />
         </div>
 
-        {userIdError && (
-          <p className="text-red-500 text-xs -mt-2">{userIdError}</p>
-        )}
-
-        {/* Mobile login */}
+        
         <div className="flex items-center gap-2">
           <Button
             type="button"
@@ -153,12 +98,15 @@ export function LoginForm({ visitorInfo }: LoginFormProps) {
           >
             Login with Alight Mobile.
           </Button>
-          <button type="button" className="flex items-center justify-center">
+          <button
+            type="button"
+            className="flex items-center justify-center"
+          >
             <HelpCircle className="w-4 h-4 text-[#002586]" />
           </button>
         </div>
 
-        {/* Password */}
+        
         <div className="relative">
           <div className="absolute left-0 top-0 bottom-0 w-11 bg-[#5a5a5a] flex items-center justify-center">
             <img src="/icon_pwd.png" alt="Password" className="w-4 h-4" />
@@ -167,19 +115,12 @@ export function LoginForm({ visitorInfo }: LoginFormProps) {
             type={showPassword ? "text" : "password"}
             placeholder="Password"
             value={password}
-            onChange={(e) => {
-              setPassword(e.target.value)
-              if (passwordError) setPasswordError(null)
-            }}
+            onChange={(e) => setPassword(e.target.value)}
             className="pl-12 bg-white border-gray-300 h-10 placeholder:text-gray-500 text-sm rounded-md"
           />
         </div>
 
-        {passwordError && (
-          <p className="text-red-500 text-xs -mt-2">{passwordError}</p>
-        )}
-
-        {/* Show password */}
+        
         <div className="flex items-center gap-2">
           <Checkbox
             id="show-password"
@@ -192,7 +133,7 @@ export function LoginForm({ visitorInfo }: LoginFormProps) {
           </label>
         </div>
 
-        {/* Submit */}
+        
         <Button
           type="submit"
           disabled={isLoading}
@@ -201,7 +142,7 @@ export function LoginForm({ visitorInfo }: LoginFormProps) {
           {isLoading ? "Loading..." : "Log On"}
         </Button>
 
-        {/* Links */}
+        
         <div className="space-y-1 pt-2">
           <Link href="/forgot-password" className="block text-[11px] text-[#002586] hover:underline">
             Forgot User ID or Password?
@@ -216,10 +157,12 @@ export function LoginForm({ visitorInfo }: LoginFormProps) {
           </button>
         </div>
 
+        
         <p className="pt-2 text-[11px] text-gray-600">
           All fields are required, unless they are noted as optional.
         </p>
 
+        
         <div className="flex justify-end pt-2">
           <button type="button" className="flex items-center gap-1 text-sm text-[#002586] hover:underline">
             Help
